@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>知乎日报</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="css/mui.min.css">
+
+		<style>
+			.title {
+				margin: 10px 15px 15px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+			img{
+				height: 200px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable">
+			<!--侧滑菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-left">
+				<div id="offCanvasSideScroll" style="background-image: url(images/z.png);background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						
+					</div>
+				</div>
+			</aside>
+			<!--主界面部分-->
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a href="#offCanvasSide" class="mui-icon mui-action-menu mui-icon-bars mui-pull-left"></a>
+					<h1 class="mui-title">首页</h1>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="mui-content-padded">
+							<div id="slider" class="mui-slider">
+								<!--图片-->
+								<div id="zhimges" class="mui-slider-group mui-slider-loop">
+									<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+								</div>
+								<!--原点-->
+								<div id="yuandian" class="mui-slider-indicator mui-text-center">
+									<div class="mui-indicator mui-active"></div>
+								</div>
+							</div>
+						</div>
+						
+						<!--加入今日内容-->
+						<p class="title">今日热点</p>
+						<div id="listphoto">
+							
+						</div>
+						
+					</div>
+				</div>
+				<!-- off-canvas backdrop -->
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+
+	<script>
+		mui.init({
+			swipeBack: true //启用右滑关闭功能
+		});
+		
+		/**最上面的图片轮播
+		 * href、src、title
+		 * 链接路径、图片图片、标题
+		 */
+		function divtoplunpo(href,src,title,style){
+			var html = "<div class='mui-slider-item "+style+"'>";
+				html += "<a href='" + href+ "'>";
+				html += "<img src='" + src + "'>";
+				html += "<p class='mui-slider-title'>" + title + "</p>";
+				html += "</a>";
+				html += "</div>";
+				return html;
+		}
+		
+		
+		
+		//控制多少张图片
+		var lunpo=5;
+		//
+		function tupian(data){
+							//轮播
+							var html = ""
+							//圆点
+							var yuandian = "";
+							//今日热闻
+							var tophtml = "";
+							<!--第一次 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+							html += divtoplunpo("http://daily.zhihu.com/story/"+data.stories[0].id,data.stories[0].images,data.stories[0].title,"mui-slider-item-duplicate");
+							for (var i = 0; i < data.stories.length; i++) {
+								//链接路径
+								var href="http://daily.zhihu.com/story/"+data.stories[i].id;
+								//图片图片
+								var src=data.stories[i].images;
+								//标题
+								var title=data.stories[i].title;
+								if(i<lunpo){
+									html +=divtoplunpo(href,src,title,"");
+									//圆点
+									yuandian += "<div class='mui-indicator'></div>";
+								}
+								
+								tophtml +=mrnr(href,src,title);
+							}
+							<!--最后一次 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+							html += divtoplunpo("http://daily.zhihu.com/story/"+data.stories[0].id,data.stories[0].images,data.stories[0].title,"mui-slider-item-duplicate");
+							
+							document.getElementById("zhimges").innerHTML = html;
+							document.getElementById("yuandian").innerHTML = yuandian;
+							document.getElementById("listphoto").innerHTML = tophtml;
+		}
+		/**
+		* href、src、title
+		* 链接路径、图片图片、标题
+		 */
+		function mrnr(href,src,titlt){
+			var tophtml = "<div class='mui-card' style='margin-bottom: 5px;'>";
+				tophtml += "<ul class='mui-table-view'>";
+				tophtml += "<li class='mui-table-view-cell mui-media'>";
+				tophtml += "<a href='" + href+ "'>";
+				tophtml += "<img class='mui-media-object mui-pull-right' src='" + src + "'>";
+				tophtml += "<div class='mui-media-body'>";
+				tophtml += "<p class='mui-ellipsis'>" + titlt+ "</p>";
+				tophtml += "</div></a></li></ul></div>";
+				return tophtml;
+		}
+		
+		
+		//点击a进行掉转页面
+			mui('body').on('tap', 'a', function() {
+				window.top.location.href = this.href;
+			});
+
+		mui.ajax({
+			type: "get", //jquey是不支持post方式跨域的
+			url: "https://news-at.zhihu.com/api/4/news/latest", //跨域请求的URL
+			//传递给请求处理程序，用以获得jsonp回调函数名的参数名(默认为:callback)
+			success: function(data) {
+				tupian(data);
+				//设定每3秒循环一次
+				var slider = mui("#slider");
+				slider.slider({
+					interval: 2000
+				}); 
+			},
+			error: function(e) {
+				//失败后回调      
+				//alert("服务器请求失败");
+			}
+		});
+	</script>
+
+	<script>
+		mui.init();
+		//侧滑容器父节点
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		//主界面容器
+		var offCanvasInner = offCanvasWrapper[0].querySelector('.mui-inner-wrap');
+		//菜单容器
+		var offCanvasSide = document.getElementById("offCanvasSide");
+		//移动效果是否为整体移动
+		var moveTogether = false;
+		//侧滑容器的class列表，增加.mui-slide-in即可实现菜单移动、主界面不动的效果；
+		var classList = offCanvasWrapper[0].classList;
+		classList.add('mui-slide-in');
+
+		//主界面和侧滑菜单界面均支持区域滚动；
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		
+	</script>
+</html>
