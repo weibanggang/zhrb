@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<div id="div2" v-bind:style="mystyle">
+				<section>
+					<h1>{{title}}</h1>
+						<table>
+							<tr>
+								<th>id</th>
+								<th>姓名</th>
+								<th>性别{{person.id}}</th>
+							</tr>
+							<tr v-for="person in persons">
+								<td>{{person.id}}</td>
+								<td>{{person.name}}</td>
+								<td>{{person.sex}}</td>
+								<td>
+								<a href="#" @click="remove(person.id)">删除</a>
+								</td>
+							</tr>	
+						</table>
+					</section>
+					<button @click="changeStyle"> 变色</button>
+					<div><input  v-model.number="person.id" ></div>
+		<div><input  v-model.number="person.name" ></div>
+		<div><input  v-model.number="person.age"></div>
+			<button @click="submit">提交</button>
+		</div>
+		<script src="css/vues.js"></script>
+		<script>
+			var vm=new Vue({
+				el:"#div2",
+				data:{
+					title:'渲染数据',
+					persons:[{
+						name:'张三',
+						sex:'男',
+						id:18
+					},
+					{
+						name:'李四',
+						sex:'男',
+						id:22
+					},
+					{
+						name:'李四',
+						sex:'男',
+						id:22
+					},
+					{
+						name:'王五',
+						sex:'女',
+						id:38
+					},
+					],
+					mystyle:"color:red",
+					person:{id:0,name:"",sex:0}
+				},
+				methods:{
+					changeStyle:function(){
+						var colors=["green","red","yellow"];
+						var randColor=colors[Math.floor(Math.random()*colors.length)];
+						this.mystyle="color:"+randColor;
+					},
+					submit:function(){
+							this.persons.push({
+							id:this.person.id,
+							name:this.person.name,
+							sex:this.person.sex,
+							});
+							console.log(this.persons);
+					},
+					remove:function(id){
+						this.persons=this.persons.filter((b) => b.id != id);
+					}
+				},
+				watch:{
+					id:function(n,o){
+						console.log(`修改后n:${n} 修改 o:${o}`)
+					}
+				},
+				computed:{
+					revMsg:function(){
+						return this.msg.split("").reverse().join("");
+					}
+				}
+			});
+		</script>
+	</body>
+	
+</html>

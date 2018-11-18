@@ -88,12 +88,9 @@
 				return html;
 		}
 		
-		
-		
-		//控制多少张图片
-		var lunpo=5;
 		//
 		function tupian(data){
+			console.log(data);
 							//轮播
 							var html = ""
 							//圆点
@@ -111,7 +108,7 @@
 								var src=data.stories[i].images;
 								//标题
 								var title=data.stories[i].title;
-								if(i<lunpo){
+								if(i<data.top_stories.length){
 									html +=divtoplunpo(href,src,title,"");
 									//圆点
 									yuandian += "<div class='mui-indicator'></div>";
@@ -141,7 +138,35 @@
 				tophtml += "</div></a></li></ul></div>";
 				return tophtml;
 		}
-		
+		function vas(){
+				var vue=new Vue({
+					el:"#zhimges",
+					data:{
+						list:{
+							ga_prefix: "111816",
+							id: 9701531,
+							images: ["https://pic1.zhimg.com/v2-867ca589543a1d478c7352199c1f659c.jpg"],
+							title: "闻闻母羊的屁股，我乐开了花",
+							type: 0
+							},
+						top_stories:""
+					},
+					created:function(){
+						var d = this;
+						fetch('https://news-at.zhihu.com/api/4/news/latest',{
+							methos:'get'
+						}).then(response => response.json())
+						.then((data) => {
+							d.top_stories=data.top_stories;
+							console.log(d.top_stories);
+						}).catch(function (r){
+							console.err(r);
+						})
+					}
+					
+				}) 
+		}
+		vas();
 		
 		//点击a进行掉转页面
 			mui('body').on('tap', 'a', function() {

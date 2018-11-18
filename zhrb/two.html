@@ -41,7 +41,9 @@
 				font-size: 14px;
 				color: #8f8f94;
 			}
-			
+			.palynone{
+				display: none;
+			}
 			
 		</style>
 	</head>
@@ -53,32 +55,24 @@
 			<h1 class="mui-title">导航栏</h1>
 		</header>
 
-		<div class="mui-content">
+		<div class="mui-content" id="viewDiv" >
 			
 		</div>
 		<script src="js/mui.min.js"></script>
 		<script type="text/javascript">
+			
+			var url=window.location.href;
+			var loc = url.substring(url.lastIndexOf('=')+1, url.length); 
+			 document.getElementById("viewDiv").innerHTML = '<object type="text/html" data="http://daily.zhihu.com/story/'+loc+'" style="width:100% ;height=100%;"></object>';
 			mui.init({
 				swipeBack: true //启用右滑关闭功能
 			});
-			mui.ajax({
-				type: "get", //jquey是不支持post方式跨域的
-				url: "https://news-at.zhihu.com/api/4/news/3892357", //跨域请求的URL
-				//传递给请求处理程序，用以获得jsonp回调函数名的参数名(默认为:callback)
-				success: function(data) {
-					tupian(data);
-					//设定每3秒循环一次
-					var slider = mui("#slider");
-					slider.slider({
-						interval: 2000
-					}); 
-				},
-				error: function(e) {
-					//失败后回调      
-					//alert("服务器请求失败");
-				}
+			
+			var cl=mui(".header-for-mobile");
+			console.log(cl);
+			//cl.classList.add("palynone");
 		</script>
-
+			
 	<script>document.write('<script src="//' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script><script>document.addEventListener('LiveReloadDisconnect', function() { setTimeout(function() { window.location.reload(); }, 500); })</script></body>
 
 </html>
